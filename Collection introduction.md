@@ -55,7 +55,7 @@ Map是每次存储一个<k,v>键值对
 
 ## 5.1 Collections接口
 
-![](Collection%20introduction.assets/collection.png)
+![](https://raw.githubusercontent.com/15361717303/test/main/Collection%20introduction.assets/collection.png)
 
 
 
@@ -63,7 +63,7 @@ Map是每次存储一个<k,v>键值对
 
 #### 5.1.1.1 ArrayList
 
-![](Collection%20introduction.assets/ArrayList.png)
+![](https://raw.githubusercontent.com/15361717303/test/main/Collection%20introduction.assets/ArrayList.png)
 
 #### 5.1.1.2 LinkedList
 
@@ -71,7 +71,7 @@ Map是每次存储一个<k,v>键值对
 
 #### 5.1.1.3 Vector
 
-![](Collection%20introduction.assets/Vector.png)
+![](https://raw.githubusercontent.com/15361717303/test/main/Collection%20introduction.assets/Vector.png)
 
 ### 5.1.2 set
 
