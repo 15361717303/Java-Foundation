@@ -63,15 +63,15 @@ Map是每次存储一个<k,v>键值对
 
 #### 5.1.1.1 ArrayList
 
-![](https://raw.githubusercontent.com/15361717303/test/main/picture/ArrayList.png)
+![](picture/ArrayList.png)
 
 #### 5.1.1.2 LinkedList
 
-![](https://raw.githubusercontent.com/15361717303/test/main/picture/LinkedList.png)
+![](picture/LinkedList.png)
 
 #### 5.1.1.3 Vector
 
-![](https://raw.githubusercontent.com/15361717303/test/main/picture/Vector.png)
+![](picture/Vector.png)
 
 ### 5.1.2 set
 
