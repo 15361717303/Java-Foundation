@@ -164,6 +164,158 @@ Collections.synchronizedList //可以使用Collections类的方法
 
 ![](picture/LinkedList.png)
 
+源码文档：
+
+![](picture/LinkedList_3.png)
+
+1. linkedList的底层实现是由双向链表
+
+![](picture/LinkedList_1.png)
+
+如上图所示：
+
+该双向链表由两个指针：指向第一个节点和最后一个节点的指针，链表长度的变量size
+
+![](picture/LinkedList_2.png)
+
+如上图所示：Node是实现双向链表的节点,有前节点和后节点
+
+2. 因为底层是双向链表实现的，所以没有增容的机制的，因为链表本来就是长度不固定的
+
+3. **优点**
+
+   1. 增加和删除效率高，删除也是需要遍历，但是删除完后不需要移动其他元素，相比较运行的性能较高
+   2. 查询的效率低，因为链表的节点在内存当中存储不是连续的，所以要一个一个的遍历进行查询，造成了效率低
+   3. 以下为增加元素的源码
+
+   ```java
+   
+       将指定元素附加到此列表的末尾。
+       此方法等效于addLast 。
+       参数：
+       e – 要附加到此列表的元素
+       回报：true （由Collection.add指定）
+       
+       public boolean add(E e) {
+           linkLast(e);
+           return true;
+       }
+       
+       void linkLast(E e) {
+           final Node<E> l = last;
+           final Node<E> newNode = new Node<>(l, e, null);
+           last = newNode;
+           if (l == null)
+               first = newNode;
+           else
+               l.next = newNode;
+           size++;
+           modCount++;
+       }
+       
+       
+   ```
+
+   4. 以下为删除的源码：
+
+      ```
+      从此列表中删除第一次出现的指定元素（如果存在）。如果此列表不包含该元素，则它不变。更正式地说，删除具有最低索引i的元素，使得(o==null ? get(i)==null : o.equals(get(i))) （如果存在这样的元素）。如果此列表包含指定的元素（或等效地，如果此列表因调用而更改），则返回true 。
+      参数：o – 要从此列表中删除的元素（如果存在）
+      回报：如果此列表包含指定元素，则为true
+      
+      public boolean remove(Object o) {
+              if (o == null) {
+                  for (Node<E> x = first; x != null; x = x.next) {
+                      if (x.item == null) {
+                          unlink(x);
+                          return true;
+                      }
+                  }
+              } else {
+                  for (Node<E> x = first; x != null; x = x.next) {
+                      if (o.equals(x.item)) {
+                          unlink(x);
+                          return true;
+                      }
+                  }
+              }
+              return false;
+          }
+          //以下是取消非空节点的链接，还有unlinkLast,unlinkFirst原理差不多
+          E unlink(Node<E> x) {
+              // assert x != null;
+              final E element = x.item;
+              final Node<E> next = x.next;
+              final Node<E> prev = x.prev;
+      
+              if (prev == null) {
+                  first = next;
+              } else {
+                  prev.next = next;
+                  x.prev = null;
+              }
+      
+              if (next == null) {
+                  last = prev;
+              } else {
+                  next.prev = prev;
+                  x.next = null;
+              }
+      
+              x.item = null;
+              size--;
+              modCount++;
+              return element;
+          }
+      ```
+
+      5. 以下是清空LinkedList的源码
+
+         ```
+         //全部节点的属性赋值为空
+         public void clear() {
+                 // Clearing all of the links between nodes is "unnecessary", but:
+                 // - helps a generational GC if the discarded nodes inhabit
+                 //   more than one generation
+                 // - is sure to free memory even if there is a reachable Iterator
+                 for (Node<E> x = first; x != null; ) {
+                     Node<E> next = x.next;
+                     x.item = null;
+                     x.next = null;
+                     x.prev = null;
+                     x = next;
+                 }
+                 first = last = null;
+                 size = 0;
+                 modCount++;
+             }
+         ```
+
+4. 总结：
+
+​		不同步，线程不安全，不支持随机访问，但是增删操作效率高，不适合查询
+
+线程不同步不安全例子：
+
+```java
+void linkLast(E e) {
+        final Node<E> l = last;
+        final Node<E> newNode = new Node<>(l, e, null);
+        last = newNode;
+        if (l == null)
+            first = newNode;
+        else
+            l.next = newNode;
+        size++;
+        modCount++;
+    }
+
+```
+
+
+
+当两个线程并行运行时候同时向第四个节点处尾插加入第五个节点，第一个线程拿到第四个节点的引用地址last赋值给l，并创建新的节点，将新节点的prev指向第四个节点。此时线程阻塞，第二个线程执行，并成功添加第五个节点，然后第一个线程继续执行，将last赋值为刚刚新建的节点，并将l（第四个节点）的next域指向新节点，此时链表里面共五个点，第二个线程创建的节点会被第一个线程创建的节点覆盖，不安全。
+
 #### 5.1.1.3 Vector
 
 ![](picture/Vector.png)
