@@ -111,7 +111,7 @@ list的主要实现类有：ArrayList,LinkedList,Vector
 
 5. **ArrayList** **特点：**
 
-   **优点：**
+   **	优点：**
 
    1. 向 ArrayList 末尾添加元素（add() ⽅法）时，效率较⾼ ，因为不用移动其他元素
 
@@ -168,7 +168,9 @@ Collections.synchronizedList //可以使用Collections类的方法
 
 ![](picture/LinkedList_3.png)
 
-1. linkedList的底层实现是由双向链表
+##### linkedList的底层
+
+linkedList的底层实现是由双向链表
 
 ![](picture/LinkedList_1.png)
 
@@ -180,118 +182,118 @@ Collections.synchronizedList //可以使用Collections类的方法
 
 如上图所示：Node是实现双向链表的节点,有前节点和后节点
 
-2. 因为底层是双向链表实现的，所以没有增容的机制的，因为链表本来就是长度不固定的
+##### 注：因为底层是双向链表实现的，所以没有增容的机制的，因为链表本来就是长度不固定的
 
-3. **优点**
+##### 优点
 
-   1. 增加和删除效率高，删除也是需要遍历，但是删除完后不需要移动其他元素，相比较运行的性能较高
-   2. 查询的效率低，因为链表的节点在内存当中存储不是连续的，所以要一个一个的遍历进行查询，造成了效率低
-   3. 以下为增加元素的源码
+1. 增加和删除效率高，删除也是需要遍历，但是删除完后不需要移动其他元素，相比较运行的性能较高
+2. 查询的效率低，因为链表的节点在内存当中存储不是连续的，所以要一个一个的遍历进行查询，造成了效率低
+3. 以下为增加元素的源码
 
-   ```java
+```java
+
+    将指定元素附加到此列表的末尾。
+    此方法等效于addLast 。
+    参数：
+    e – 要附加到此列表的元素
+    回报：true （由Collection.add指定）
+    
+    public boolean add(E e) {
+        linkLast(e);
+        return true;
+    }
+    
+    void linkLast(E e) {
+        final Node<E> l = last;
+        final Node<E> newNode = new Node<>(l, e, null);
+        last = newNode;
+        if (l == null)
+            first = newNode;
+        else
+            l.next = newNode;
+        size++;
+        modCount++;
+    }
+    
+    
+```
+
+4. 以下为删除的源码：
+
+   ```
+   从此列表中删除第一次出现的指定元素（如果存在）。如果此列表不包含该元素，则它不变。更正式地说，删除具有最低索引i的元素，使得(o==null ? get(i)==null : o.equals(get(i))) （如果存在这样的元素）。如果此列表包含指定的元素（或等效地，如果此列表因调用而更改），则返回true 。
+   参数：o – 要从此列表中删除的元素（如果存在）
+   回报：如果此列表包含指定元素，则为true
    
-       将指定元素附加到此列表的末尾。
-       此方法等效于addLast 。
-       参数：
-       e – 要附加到此列表的元素
-       回报：true （由Collection.add指定）
-       
-       public boolean add(E e) {
-           linkLast(e);
-           return true;
+   public boolean remove(Object o) {
+           if (o == null) {
+               for (Node<E> x = first; x != null; x = x.next) {
+                   if (x.item == null) {
+                       unlink(x);
+                       return true;
+                   }
+               }
+           } else {
+               for (Node<E> x = first; x != null; x = x.next) {
+                   if (o.equals(x.item)) {
+                       unlink(x);
+                       return true;
+                   }
+               }
+           }
+           return false;
        }
-       
-       void linkLast(E e) {
-           final Node<E> l = last;
-           final Node<E> newNode = new Node<>(l, e, null);
-           last = newNode;
-           if (l == null)
-               first = newNode;
-           else
-               l.next = newNode;
-           size++;
+       //以下是取消非空节点的链接，还有unlinkLast,unlinkFirst原理差不多
+       E unlink(Node<E> x) {
+           // assert x != null;
+           final E element = x.item;
+           final Node<E> next = x.next;
+           final Node<E> prev = x.prev;
+   
+           if (prev == null) {
+               first = next;
+           } else {
+               prev.next = next;
+               x.prev = null;
+           }
+   
+           if (next == null) {
+               last = prev;
+           } else {
+               next.prev = prev;
+               x.next = null;
+           }
+   
+           x.item = null;
+           size--;
            modCount++;
+           return element;
        }
-       
-       
    ```
 
-   4. 以下为删除的源码：
+   5. 以下是清空LinkedList的源码
 
       ```
-      从此列表中删除第一次出现的指定元素（如果存在）。如果此列表不包含该元素，则它不变。更正式地说，删除具有最低索引i的元素，使得(o==null ? get(i)==null : o.equals(get(i))) （如果存在这样的元素）。如果此列表包含指定的元素（或等效地，如果此列表因调用而更改），则返回true 。
-      参数：o – 要从此列表中删除的元素（如果存在）
-      回报：如果此列表包含指定元素，则为true
-      
-      public boolean remove(Object o) {
-              if (o == null) {
-                  for (Node<E> x = first; x != null; x = x.next) {
-                      if (x.item == null) {
-                          unlink(x);
-                          return true;
-                      }
-                  }
-              } else {
-                  for (Node<E> x = first; x != null; x = x.next) {
-                      if (o.equals(x.item)) {
-                          unlink(x);
-                          return true;
-                      }
-                  }
-              }
-              return false;
-          }
-          //以下是取消非空节点的链接，还有unlinkLast,unlinkFirst原理差不多
-          E unlink(Node<E> x) {
-              // assert x != null;
-              final E element = x.item;
-              final Node<E> next = x.next;
-              final Node<E> prev = x.prev;
-      
-              if (prev == null) {
-                  first = next;
-              } else {
-                  prev.next = next;
-                  x.prev = null;
-              }
-      
-              if (next == null) {
-                  last = prev;
-              } else {
-                  next.prev = prev;
+      //全部节点的属性赋值为空
+      public void clear() {
+              // Clearing all of the links between nodes is "unnecessary", but:
+              // - helps a generational GC if the discarded nodes inhabit
+              //   more than one generation
+              // - is sure to free memory even if there is a reachable Iterator
+              for (Node<E> x = first; x != null; ) {
+                  Node<E> next = x.next;
+                  x.item = null;
                   x.next = null;
+                  x.prev = null;
+                  x = next;
               }
-      
-              x.item = null;
-              size--;
+              first = last = null;
+              size = 0;
               modCount++;
-              return element;
           }
       ```
 
-      5. 以下是清空LinkedList的源码
-
-         ```
-         //全部节点的属性赋值为空
-         public void clear() {
-                 // Clearing all of the links between nodes is "unnecessary", but:
-                 // - helps a generational GC if the discarded nodes inhabit
-                 //   more than one generation
-                 // - is sure to free memory even if there is a reachable Iterator
-                 for (Node<E> x = first; x != null; ) {
-                     Node<E> next = x.next;
-                     x.item = null;
-                     x.next = null;
-                     x.prev = null;
-                     x = next;
-                 }
-                 first = last = null;
-                 size = 0;
-                 modCount++;
-             }
-         ```
-
-4. 总结：
+##### 总结
 
 ​		不同步，线程不安全，不支持随机访问，但是增删操作效率高，不适合查询
 
@@ -319,6 +321,85 @@ void linkLast(E e) {
 #### 5.1.1.3 Vector
 
 ![](picture/Vector.png)
+
+源码代码如下：
+
+##### Vector的属性分析
+
+![](picture/Vector_2.png)
+
+**Vector**的属性解析：
+
+**elementData**：用来存储数据的
+
+**elementCount**：是Vector向量当前的容量
+
+**capacityIncrement**：是Vector向量每次扩容的大小
+
+
+
+##### **Vector底层的实现**
+
+​		Vector的底层实现是：由Object[]数组实现的
+
+```java
+protected Object[] elementData;
+```
+
+![](picture/Vector_5.png)
+
+![](picture/Vector_3.png)
+
+![](picture/Vector_4.png)
+
+如上图所示：
+
+当使用Vector的空参构造实例化对象的时候，会使用默认的**容量（10）**进行对象实例化，然后调用有参构造方法 **Vector(int initialCapacity)** ，**Vector(int initialCapacity)** 方法再调用有参构造方法**Vector(int initialCapacity, int capacityIncrement)**，指定容量增量为0，初始容量为10的空向量Vector。
+
+
+
+
+
+##### **Vector插入一个元素的过程**
+
+		1.  首先线进入判断容量大小![](picture/Vector_6.png)
+		1.  判断插入一个元素的容量是否超过数组缓冲区的长度
+
+![](picture/Vector_7.png)
+
+3. 判断容量不够会进入扩容的机制
+
+![](picture/Vector_8.png)
+
+如上图所示：
+
+```java
+int newCapacity = oldCapacity + ((capacityIncrement > 0) ?
+                                         capacityIncrement : oldCapacity);
+```
+
+先判断自增容量是否大于0，如果大于0就是选择自定义的自增容量
+
+```
+int newCapacity = oldCapacity + capacityIncrement;
+```
+
+否则使用默认的oldCapacity,容量为原来的2倍
+
+```java
+int newCapacity = oldCapacity + oldCapacity;
+```
+
+##### **Vector的特点**
+
+1. 增加和删除效率低，但是增加和删除完后需要移动其他元素，造成了性能低
+2. 查询的效率高，因为存在数组下标，支持随机访问
+
+##### 总结
+
+同步，线程安全，查询效率高，但不推荐使用
+
+线程安全是因为方法里使用了**synchronized**
 
 ### 5.1.2 set
 
